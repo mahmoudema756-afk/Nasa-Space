@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "name": "Jezero Crater EVA Dataset",
+    "version": "1.0.0",
+    "note": "Illustrative mock data for the NASA Space Apps Challenge. Only the Octavia E. Butler landing site is an approximate real-world location; every other coordinate, hazard and dose value is invented."
+  },
+  "mission": {
+    "crewCallsign": "EVA-01",
+    "marsRadiusKm": 3389.5,
+    "eva": {
+      "walkSpeedKmH": 3,
+      "o2RestPctPerH": 6,
+      "o2WalkPctPerH": 12,
+      "slopeSpeedFactor": 0.6,
+      "slopeO2Factor": 1.25,
+      "reservePct": 15,
+      "returnSafetyFactor": 1.25,
+      "radiationDetourMarginKm": 0.15,
+      "rechargeRadiusKm": 0.1,
+      "ambientDoseUSvH": 27
+    },
+    "suit": {
+      "nominalPsi": 4.3,
+      "restHr": 70,
+      "walkHr": 108
+    }
+  },
+  "base": {
+    "id": "hab-01",
+    "name": "Base Habitat — Jezero Alpha",
+    "lat": 18.38,
+    "lng": 77.58,
+    "description": "Pressurised surface habitat with airlock, O2 recharge umbilical and long-range comms. All EVA traverses start and end here."
+  },
+  "pois": [
+    {
+      "id": "poi-landing",
+      "name": "Octavia E. Butler Landing Site",
+      "type": "landmark",
+      "lat": 18.4446,
+      "lng": 77.4509,
+      "description": "Approximate landing location of the Perseverance rover. Useful navigation landmark and hardware salvage site."
+    },
+    {
+      "id": "poi-echo",
+      "name": "Waypoint ECHO — Cache Depot",
+      "type": "waypoint",
+      "lat": 18.37,
+      "lng": 77.52,
+      "description": "Mock supply cache: two spare O2 canisters, repair kit and a beacon."
+    },
+    {
+      "id": "poi-foxtrot",
+      "name": "Waypoint FOXTROT — Comms Relay",
+      "type": "waypoint",
+      "lat": 18.42,
+      "lng": 77.62,
+      "description": "Mock line-of-sight relay mast covering the north-east sector."
+    },
+    {
+      "id": "poi-shelter",
+      "name": "Emergency Shelter ES-1",
+      "type": "waypoint",
+      "lat": 18.37,
+      "lng": 77.4,
+      "description": "Inflatable emergency shelter with a 48-hour O2 supply (mock)."
+    },
+    {
+      "id": "sci-delta",
+      "name": "Delta Front Sediments",
+      "type": "science",
+      "lat": 18.47,
+      "lng": 77.4,
+      "description": "Layered fan-delta deposits. Prime biosignature search target.",
+      "target": { "priority": "HIGH", "sample": "Mudstone cores", "instrument": "Drill + Raman spectrometer" }
+    },
+    {
+      "id": "sci-seitah",
+      "name": "Séítah Ridge Outcrop",
+      "type": "science",
+      "lat": 18.398,
+      "lng": 77.375,
+      "description": "Olivine-rich igneous unit. Radiometric dating candidate.",
+      "target": { "priority": "MEDIUM", "sample": "Olivine cumulate chips", "instrument": "XRF + hand lens" }
+    },
+    {
+      "id": "sci-clay",
+      "name": "Phyllosilicate Outcrop",
+      "type": "science",
+      "lat": 18.32,
+      "lng": 77.43,
+      "description": "Clay-bearing exposure indicating past liquid water.",
+      "target": { "priority": "HIGH", "sample": "Clay scrapings", "instrument": "NIR spectrometer" }
+    },
+    {
+      "id": "sci-carbonate",
+      "name": "Carbonate Rim Sample Site",
+      "type": "science",
+      "lat": 18.43,
+      "lng": 77.685,
+      "description": "Margin carbonates that may preserve ancient atmospheric chemistry.",
+      "target": { "priority": "MEDIUM", "sample": "Carbonate fragments", "instrument": "Rock hammer + XRD" }
+    },
+    {
+      "id": "sci-lavatube",
+      "name": "Lava Tube Skylight Candidate",
+      "type": "science",
+      "lat": 18.3,
+      "lng": 77.58,
+      "description": "Possible skylight into a lava tube: natural radiation shelter and microbial refuge. Approach the escarpment with caution.",
+      "target": { "priority": "HIGH", "sample": "Visual survey + air sample", "instrument": "LIDAR + gas sniffer" }
+    },
+    {
+      "id": "sci-lakebed",
+      "name": "Ancient Lakebed Mudstones",
+      "type": "science",
+      "lat": 18.49,
+      "lng": 77.52,
+      "description": "Fine-grained lacustrine mudstones with organic-preservation potential.",
+      "target": { "priority": "HIGH", "sample": "Drill cores", "instrument": "Drill + GC-MS" }
+    }
+  ],
+  "radiationZones": [
+    {
+      "id": "rz-alpha",
+      "name": "Solar Particle Hotspot ALPHA",
+      "center": [18.41, 77.5],
+      "radiusKm": 1.8,
+      "doseUSvH": 180,
+      "level": "HIGH",
+      "description": "Thin regolith over bedrock, poor shielding. Avoid prolonged exposure."
+    },
+    {
+      "id": "rz-bravo",
+      "name": "Thin-Regolith Hotspot BRAVO",
+      "center": [18.34, 77.46],
+      "radiusKm": 1.4,
+      "doseUSvH": 120,
+      "level": "MODERATE",
+      "description": "Exposed plateau with elevated secondary neutron flux."
+    },
+    {
+      "id": "rz-charlie",
+      "name": "Flare Exposure Gap CHARLIE",
+      "center": [18.45, 77.6],
+      "radiusKm": 1.2,
+      "doseUSvH": 240,
+      "level": "CRITICAL",
+      "description": "Open valley aligned with solar-flare particle direction. Do not enter."
+    },
+    {
+      "id": "rz-delta",
+      "name": "Exposed Ridge DELTA",
+      "center": [18.3, 77.68],
+      "radiusKm": 1.6,
+      "doseUSvH": 95,
+      "level": "MODERATE",
+      "description": "Ridgeline with no natural shielding."
+    }
+  ],
+  "slopeZones": [
+    {
+      "id": "sz-delta-scarp",
+      "name": "Delta Scarp",
+      "slopeDeg": 28,
+      "difficulty": "STEEP",
+      "latlngs": [[18.455, 77.38], [18.49, 77.39], [18.5, 77.44], [18.47, 77.45], [18.45, 77.41]],
+      "description": "Steep delta margin with loose talus."
+    },
+    {
+      "id": "sz-seitah",
+      "name": "Séítah Rough Terrain",
+      "slopeDeg": 18,
+      "difficulty": "ROUGH",
+      "latlngs": [[18.385, 77.36], [18.41, 77.34], [18.425, 77.39], [18.4, 77.42], [18.38, 77.4]],
+      "description": "Fractured pavement and ripple fields."
+    },
+    {
+      "id": "sz-boulder",
+      "name": "Hab East Boulder Field",
+      "slopeDeg": 14,
+      "difficulty": "ROUGH",
+      "latlngs": [[18.35, 77.64], [18.385, 77.66], [18.395, 77.625], [18.36, 77.615]],
+      "description": "Dense ejecta boulders; slow going."
+    },
+    {
+      "id": "sz-dune",
+      "name": "Central Dune Ridge",
+      "slopeDeg": 20,
+      "difficulty": "STEEP",
+      "latlngs": [[18.375, 77.51], [18.4, 77.535], [18.395, 77.55], [18.37, 77.53]],
+      "description": "Loose, wind-blown sand with slip faces."
+    },
+    {
+      "id": "sz-rim",
+      "name": "Southern Rim Escarpment",
+      "slopeDeg": 32,
+      "difficulty": "EXTREME",
+      "latlngs": [[18.29, 77.5], [18.31, 77.55], [18.28, 77.62], [18.26, 77.56]],
+      "description": "Near-cliff terrain. Roped descent only."
+    }
+  ]
+}

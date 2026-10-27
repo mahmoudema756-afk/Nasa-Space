@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0d17" />
+  <title>Martian Map · EVA HUD — Interplanetary Survival Guide</title>
+  <meta name="description" content="Offline-first EVA heads-up display and navigation system for astronauts on Mars (NASA Space Apps Challenge)." />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <header id="topbar" class="glass">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>MARTIAN MAP <em>//</em> EVA NAV</h1>
+          <p>JEZERO CRATER · BASE HAB 18.38°N 77.58°E</p>
+        </div>
+      </div>
+      <div class="top-readouts">
+        <div class="readout"><span class="lbl">EVA CLOCK</span><span id="met" class="val">T+00:00:00</span></div>
+        <div class="readout hide-sm"><span class="lbl">CURSOR</span><span id="cursor" class="val">—</span></div>
+        <span id="link-chip" class="chip ok">LINK</span>
+      </div>
+    </header>
+
+    <div id="map" role="application" aria-label="Interactive map of Mars. Click anywhere to plan a route."></div>
+    <div class="fx-scan" aria-hidden="true"></div>
+
+    <aside id="hud" aria-label="EVA heads-up display">
+      <button id="hud-toggle" class="btn hud-toggle" type="button" aria-expanded="true">▾ HUD PANELS</button>
+
+      <div id="col-left" class="col">
+        <div id="alerts" role="alert" aria-live="assertive"></div>
+
+        <section class="panel" id="panel-telemetry" aria-labelledby="h-tele">
+          <header class="panel-head">
+            <h2 id="h-tele">EVA SUIT TELEMETRY</h2>
+            <span id="suit-state" class="chip ok">NOMINAL</span>
+          </header>
+
+          <div class="metric">
+            <div class="metric-top">
+              <span class="lbl">OXYGEN</span>
+              <span class="big"><b id="o2-val">100.0</b><small>%</small></span>
+            </div>
+            <div id="o2-bar" class="bar ok" role="progressbar" aria-label="Oxygen level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="o2-fill"></i></div>
+            <div class="metric-sub"><span id="o2-burn">BURN 0.0 %/h</span><span id="o2-end">ENDURANCE —</span></div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-top">
+              <span class="lbl">SUIT PRESSURE</span>
+              <span class="big"><b id="psi-val">4.30</b><small>PSI</small></span>
+            </div>
+            <div id="psi-bar" class="bar blue" role="progressbar" aria-label="Suit pressure" aria-valuemin="3" aria-valuemax="5" aria-valuenow="4.3"><i id="psi-fill"></i></div>
+            <div class="metric-sub"><span>NOMINAL 4.3 PSI</span><span id="psi-state">STABLE</span></div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-top">
+              <span class="lbl">HEART RATE</span>
+              <span class="big"><span id="hr-icon" class="heart" aria-hidden="true">♥</span><b id="hr-val">70</b><small>BPM</small></span>
+            </div>
+            <canvas id="hr-spark" class="spark" aria-hidden="true"></canvas>
+            <div class="metric-sub"><span id="hr-state">RESTING</span><span id="rad-val">RAD 27 µSv/h</span></div>
+          </div>
+
+          <div class="metric srr">
+            <div class="metric-top">
+              <span class="lbl">SAFE RETURN RADIUS</span>
+              <span class="big"><b id="srr-val">0.0</b><small>km</small></span>
+            </div>
+            <div class="metric-sub"><span id="srr-status" class="chip ok">NOMINAL</span><span id="srr-detail">—</span></div>
+          </div>
+
+          <dl class="kv">
+            <div><dt>POSITION</dt><dd id="pos-val">—</dd></div>
+            <div><dt>TERRAIN</dt><dd id="terrain-val">—</dd></div>
+            <div><dt>DIST. TO HAB</dt><dd id="dist-val">—</dd></div>
+          </dl>
+        </section>
+      </div>
+
+      <div id="col-right" class="col">
+        <section class="panel" id="panel-layers" aria-labelledby="h-layers">
+          <header class="panel-head"><h2 id="h-layers">MAP LAYERS</h2></header>
+          <div class="toggles">
+            <button class="toggle" type="button" data-layer="base" aria-pressed="true"><i class="dot dot-neon"></i>HAB &amp; WAYPOINTS</button>
+            <button class="toggle" type="button" data-layer="radiation" aria-pressed="true"><i class="dot dot-red"></i>RADIATION HAZARD ZONES</button>
+            <button class="toggle" type="button" data-layer="slope" aria-pressed="true"><i class="dot dot-amber"></i>STEEP / ROUGH TERRAIN</button>
+            <button class="toggle" type="button" data-layer="safe" aria-pressed="true"><i class="dot dot-ring"></i>SAFE RETURN RADIUS</button>
+            <button class="toggle" type="button" data-layer="trail" aria-pressed="true"><i class="dot dot-blue"></i>MOVEMENT TRAIL</button>
+          </div>
+          <label class="field"><span class="lbl">BASEMAP</span><select id="basemap"></select></label>
+          <div class="row-btns">
+            <button id="btn-center-hab" class="btn" type="button">⌖ CENTER HAB</button>
+            <button id="btn-locate" class="btn" type="button">◉ LOCATE EVA</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-nav" aria-labelledby="h-nav">
+          <header class="panel-head">
+            <h2 id="h-nav">NAV PLANNER</h2>
+            <span id="p-status" class="chip info">NO ROUTE</span>
+          </header>
+          <dl class="kv">
+            <div><dt>TARGET</dt><dd id="p-target">—</dd></div>
+            <div><dt>DIST. FROM HAB</dt><dd id="p-basedist">—</dd></div>
+            <div><dt>ROUTE LENGTH</dt><dd id="p-len">—</dd></div>
+            <div><dt>ROUGH TERRAIN</dt><dd id="p-slope">—</dd></div>
+            <div><dt>TRAVERSE TIME</dt><dd id="p-eta">—</dd></div>
+            <div><dt>O₂ OUTBOUND</dt><dd id="p-out">—</dd></div>
+            <div><dt>O₂ RETURN</dt><dd id="p-back">—</dd></div>
+            <div><dt>O₂ ON ARRIVAL</dt><dd id="p-arr">—</dd></div>
+            <div><dt>O₂ BACK AT HAB</dt><dd id="p-home">—</dd></div>
+          </dl>
+          <p id="p-warn" class="note">Click anywhere on the map to plan a route from your position.</p>
+          <div class="btn-grid">
+            <button id="btn-go" class="btn btn-primary" type="button" disabled>▶ ENGAGE TRAVERSE</button>
+            <button id="btn-return" class="btn btn-blue" type="button" disabled>⌂ RETURN TO HAB</button>
+            <button id="btn-abort" class="btn btn-danger" type="button" disabled>■ ABORT</button>
+            <button id="btn-clear" class="btn" type="button" disabled>✕ CLEAR ROUTE</button>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-sys" aria-labelledby="h-sys">
+          <header class="panel-head"><h2 id="h-sys">SYSTEM</h2></header>
+          <label class="field"><span class="lbl">SIM SPEED</span>
+            <select id="sim-speed">
+              <option value="1">1× real-time</option>
+              <option value="30">30×</option>
+              <option value="120" selected>120×</option>
+              <option value="600">600×</option>
+            </select>
+          </label>
+          <dl class="kv">
+            <div><dt>DATA SOURCE</dt><dd id="data-src">—</dd></div>
+            <div><dt>LOCAL LOG</dt><dd id="log-count">0 pts</dd></div>
+          </dl>
+          <div class="btn-grid">
+            <button id="btn-recharge" class="btn btn-primary" type="button" disabled>⚡ RECHARGE O₂</button>
+            <button id="btn-clear-log" class="btn" type="button">CLEAR LOG</button>
+            <button id="btn-reset" class="btn btn-danger" type="button">RESET EVA</button>
+          </div>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <div id="toasts" aria-live="polite"></div>
+
+  <div id="fatal" class="fatal" hidden>
+    <div class="glass">
+      <h2>MAP ENGINE OFFLINE</h2>
+      <p>Leaflet.js could not be loaded from the CDN. Connect once to cache it, or download <code>leaflet.js</code> / <code>leaflet.css</code> next to this file and update the two tags in <code>index.html</code>.</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
